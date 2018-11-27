@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/open.ico</file>
+        <file>icons/close.ico</file>
+        <file>icons/connect.png</file>
+        <file>icons/disconnect.png</file>
+        <file>icons/basler_32x32.png</file>
+        <file>icons/basler_48x48.png</file>
+        <file>icons/click.ico</file>
+        <file>icons/grab.png</file>
+        <file>icons/record.png</file>
+        <file>icons/record-stop.png</file>
+        <file>icons/snap.png</file>
+        <file>icons/stop.png</file>
+        <file>CameraUI.ico</file>
+        <file>icons/CodElec.png</file>
+        <file>icons/info.ico</file>
+        <file>icons/zoom_fit.png</file>
+        <file>icons/zoom_in.png</file>
+        <file>icons/zoom_out.png</file>
+    </qresource>
+</RCC>
