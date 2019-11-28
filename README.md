@@ -8,5 +8,5 @@ Link: [www.codelec.eu](https://en.codelec.cz/publications)
 Description in czech language:
   [www.codelec.cz](https://www.codelec.cz/me-prispevky/zpracovani-obrazu-2)
 
-![alt text](https://github.com/CodElecCz/CameraUIv1/blob/master/Qt%20Pylon.png)
+![alt text](https://codeleccz.github.io/CameraUIv1/Qt%20Pylon.png)
 
