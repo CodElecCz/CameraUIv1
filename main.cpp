@@ -6,9 +6,11 @@ using namespace Pylon;
 
 int main(int argc, char *argv[])
 {
+    QApplication a(argc, argv);
+
+    //SetGenICamLogConfig(qApp->applicationDirPath().toStdString().c_str());
     PylonInitialize();
 
-    QApplication a(argc, argv);
     MainWindow w;
     w.show();
 

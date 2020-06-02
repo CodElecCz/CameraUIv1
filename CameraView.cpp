@@ -1,6 +1,5 @@
-
 #include "CameraView.h"
-#include "ui_cameraview.h"
+#include "ui_CameraView.h"
 
 CameraView::CameraView(QWidget *parent) :
     QWidget(parent),
@@ -45,20 +44,20 @@ void CameraView::addView(QString name)
         view = new CameraViewSingle(this, name);
         views.insert(name, view);
         controlsLayout1->addSpacing(1);
-        controlsLayout1->addWidget(new CameraViewSingle(this, name), 1);
+        controlsLayout1->addWidget(view, 1);
         cntLayout++;
         break;
     case 2:
         view = new CameraViewSingle(this, name);
         views.insert(name, view);
-        controlsLayout2->addWidget(new CameraViewSingle(this, name), 1);
+        controlsLayout2->addWidget(view, 1);
         cntLayout++;
         break;
     case 3:
         view = new CameraViewSingle(this, name);
         views.insert(name, view);
         controlsLayout2->addSpacing(1);
-        controlsLayout2->addWidget(new CameraViewSingle(this, name), 1);
+        controlsLayout2->addWidget(view, 1);
         cntLayout++;
         break;
     default:
@@ -66,66 +65,29 @@ void CameraView::addView(QString name)
     }
 }
 
-void CameraView::removeView(QString name)
+void CameraView::removeView()
 {
-    QList<QString> keys =  views.keys();
-    int index = 0;
-    CameraViewSingle* view = nullptr;
-
-    foreach(QString key, keys)
+    switch(cntLayout)
     {
-        if(0==QString::compare(key, name))
-        {
-            view = views[name];
-            break;
-        }
-        else
-           index++;
-    }
-
-    switch(index)
-    {
-    case 0:
-        views.remove(name);
-        if(view!=nullptr)
-        {
-        controlsLayout1->removeWidget(view);
-        delete view;
-        cntLayout--;
-        }
-        break;
-    case 1:
-        views.remove(name);
-        if(view!=nullptr)
-        {
-        controlsLayout1->removeWidget(view);
-        delete view;
-        cntLayout--;
-        }
-        break;
-    case 2:
-        views.remove(name);
-        if(view!=nullptr)
-        {
-        controlsLayout2->removeWidget(view);
-        delete view;
-        cntLayout--;
-        }
-        break;
+    case 4:
+        controlsLayout2->removeWidget(views.values().at(3));
+        delete views.values().at(3);
     case 3:
-        views.remove(name);
-        if(view!=nullptr)
-        {
-        controlsLayout2->removeWidget(view);
-        delete view;
-        cntLayout--;
-        }
+        controlsLayout2->removeWidget(views.values().at(2));
+        delete views.values().at(2);
+    case 2:
+        controlsLayout1->removeWidget(views.values().at(1));
+        delete views.values().at(1);
+    case 1:
+        controlsLayout1->removeWidget(views.values().at(0));
+        delete views.values().at(0);
         break;
     default:
         break;
     }
 
-    //TODO: if view is in middle, resort/shift others view
+    views.clear();
+    cntLayout = 0;
 }
 
 void CameraView::updateImage(QString name, QImage image)
@@ -134,6 +96,15 @@ void CameraView::updateImage(QString name, QImage image)
 
     if(view!=nullptr)
     {
+        view->updateImage(image);
+
+        //clear last error
+        view->clearError();
+    }
+    else
+    {
+        addView(name);
+        view = views[name];
         view->updateImage(image);
     }
 }
@@ -145,6 +116,95 @@ void CameraView::updateImage(QString name, QImage* image)
     if(view!=nullptr)
     {
         view->updateImage(image);
+
+        //clear last error
+        view->clearError();
     }
+}
+
+bool CameraView::saveImage(QString name, QString filePath, QString imageFormat, int imageQuality)
+{
+    bool res = false;
+    CameraViewSingle* view = views[name];
+
+    if(view!=nullptr)
+    {
+        res = view->saveImage(filePath, imageFormat, imageQuality);
+    }
+
+    return res;
+}
+
+QStringList CameraView::getViewNames()
+{
+    return views.keys();
+}
+
+void CameraView::setError(QString name, QString msg)
+{
+    CameraViewSingle* view = views[name];
+
+    if(view!=nullptr)
+    {
+        view->setError(msg);
+    }
+}
+QString CameraView::getError(QString name)
+{
+    CameraViewSingle* view = views[name];
+    QString msg("");
+
+    if(view!=nullptr)
+    {
+        msg = view->getError();
+    }
+
+    return msg;
+}
+
+void CameraView::clearError(QString name)
+{
+    CameraViewSingle* view = views[name];
+
+    if(view!=nullptr)
+    {
+        view->clearError();
+    }
+}
+
+bool CameraView::isError(QString name)
+{
+    CameraViewSingle* view = views[name];
+    bool isError = false;
+
+    if(view!=nullptr)
+    {
+        isError = view->isError();
+    }
+
+    return isError;
+}
+
+void CameraView::setPath(QString name, QString path)
+{
+    CameraViewSingle* view = views[name];
+
+    if(view!=nullptr)
+    {
+        view->setPath(path);
+    }
+}
+
+QString CameraView::getPath(QString name)
+{
+    CameraViewSingle* view = views[name];
+    QString path("");
+
+    if(view!=nullptr)
+    {
+        path = view->getPath();
+    }
+
+    return path;
 }
 

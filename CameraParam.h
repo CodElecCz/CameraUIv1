@@ -48,11 +48,16 @@ private slots:
     void on_comboBox_PixelFormat_currentIndexChanged(const QString &arg1);
     void on_comboBox_TestImageSelector_currentIndexChanged(const QString &arg1);
 
+    void on_saveButton_pressed();
+    void on_loadButton_pressed();
+
 signals:
     void addTrace(QString text, QColor color = QColor("black"));
     void setFloatValue(QString cameraName, QString nodeName, int value);
     void setIntergerValue(QString cameraName, QString nodeName, int value);
     void setStringValue(QString cameraName, QString nodeName, QString value);
+    void saveParameters(QString cameraName);
+    void loadParameters(QString cameraName);
 
 private:
     Ui::CameraParam     *ui;

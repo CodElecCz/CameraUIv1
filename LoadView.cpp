@@ -1,5 +1,5 @@
 #include "LoadView.h"
-#include "ui_loadview.h"
+#include "ui_LoadView.h"
 
 LoadView::LoadView(QWidget *parent) :
     QWidget(parent),

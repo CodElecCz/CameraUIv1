@@ -1,5 +1,5 @@
 #include "CameraParam.h"
-#include "ui_cameraparam.h"
+#include "ui_CameraParam.h"
 
 CameraParam::CameraParam(QWidget *parent, Pylon::VersionInfo info) :
     QWidget(parent),
@@ -23,21 +23,25 @@ CameraParam::~CameraParam()
 void CameraParam::resetValues()
 {
     //reset the value of editable controlls on GUI
-    ui->scrollBar_Exposure->setRange(0,10);
+    ui->scrollBar_Exposure->setRange(0,1);
     ui->scrollBar_Exposure->setValue(0);
-    ui->scrollBar_Exposure->update();
-    ui->scrollBar_Height->setRange(0,10);
+    ui->scrollBar_Height->setRange(0,1);
     ui->scrollBar_Height->setValue(0);
-    ui->scrollBar_Width->setRange(0,10);
+    ui->scrollBar_Width->setRange(0,1);
     ui->scrollBar_Width->setValue(0);
-    ui->scrollBar_OffsetX->setRange(0,10);
+    ui->scrollBar_OffsetX->setRange(0,1);
     ui->scrollBar_OffsetX->setValue(0);
-    ui->scrollBar_OffsetY->setRange(0,10);
+    ui->scrollBar_OffsetY->setRange(0,1);
     ui->scrollBar_OffsetY->setValue(0);
+    ui->spinBox_Height->setRange(0,1);
     ui->spinBox_Height->setValue(0);
+    ui->spinBox_Width->setRange(0,1);
     ui->spinBox_Width->setValue(0);
+    ui->spinBox_OffsetX->setRange(0,1);
     ui->spinBox_OffsetX->setValue(0);
+    ui->spinBox_OffsetY->setRange(0,1);
     ui->spinBox_OffsetY->setValue(0);
+    ui->spinBox_Exposure->setRange(0,1);
     ui->spinBox_Exposure->setValue(0);
 }
 
@@ -55,28 +59,10 @@ void CameraParam::setEnableCotrols(bool status)
     ui->spinBox_Width->setEnabled(status);
     ui->spinBox_OffsetX->setEnabled(status);
     ui->spinBox_OffsetY->setEnabled(status);
+    ui->saveButton->setEnabled(status);
+    ui->loadButton->setEnabled(status);
 
-    if(status)
-    {
-        connect(ui->spinBox_Height, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Height_editingFinished()));
-        connect(ui->scrollBar_Height, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Height_sliderReleased()));
-
-        connect(ui->spinBox_Width, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Width_editingFinished()));
-        connect(ui->scrollBar_Width, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Width_sliderReleased()));
-
-        connect(ui->spinBox_OffsetX, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetX_editingFinished()));
-        connect(ui->scrollBar_OffsetX, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetX_sliderReleased()));
-
-        connect(ui->spinBox_OffsetY, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetY_editingFinished()));
-        connect(ui->scrollBar_OffsetY, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetY_sliderReleased()));
-
-        connect(ui->spinBox_Exposure, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Exposure_editingFinished()));
-        connect(ui->scrollBar_Exposure, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Exposure_sliderReleased()));
-
-        connect(ui->comboBox_PixelFormat, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_PixelFormat_currentIndexChanged(const QString)));
-        connect(ui->comboBox_TestImageSelector, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_TestImageSelector_currentIndexChanged(const QString)));
-    }
-    else
+    if(!status)
     {
         disconnect(ui->spinBox_Height, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Height_editingFinished()));
         disconnect(ui->scrollBar_Height, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Height_sliderReleased()));
@@ -100,8 +86,21 @@ void CameraParam::setEnableCotrols(bool status)
     }
 }
 
+void CameraParam::on_saveButton_pressed()
+{
+    emit saveParameters(getCameraName());
+}
+
+void CameraParam::on_loadButton_pressed()
+{
+    emit loadParameters(getCameraName());
+}
+
 void CameraParam::setWidth(int val, int min, int max, int inc)
 {
+    disconnect(ui->spinBox_Width, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Width_editingFinished()));
+    disconnect(ui->scrollBar_Width, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Width_sliderReleased()));
+
     ui->scrollBar_Width->setMaximum(max);
     ui->scrollBar_Width->setMinimum(min);
     ui->scrollBar_Width->setSingleStep(inc);
@@ -111,10 +110,16 @@ void CameraParam::setWidth(int val, int min, int max, int inc)
     ui->spinBox_Width->setMinimum(min);
     ui->spinBox_Width->setSingleStep(inc);
     ui->spinBox_Width->setValue(val);
+
+    connect(ui->spinBox_Width, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Width_editingFinished()));
+    connect(ui->scrollBar_Width, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Width_sliderReleased()));
 }
 
 void CameraParam::setHeight(int val, int min, int max, int inc)
 {
+    disconnect(ui->spinBox_Height, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Height_editingFinished()));
+    disconnect(ui->scrollBar_Height, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Height_sliderReleased()));
+
     ui->scrollBar_Height->setMaximum(max);
     ui->scrollBar_Height->setMinimum(min);
     ui->scrollBar_Height->setSingleStep(inc);
@@ -124,10 +129,16 @@ void CameraParam::setHeight(int val, int min, int max, int inc)
     ui->spinBox_Height->setMinimum(min);
     ui->spinBox_Height->setSingleStep(inc);
     ui->spinBox_Height->setValue(val);
+
+    connect(ui->spinBox_Height, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Height_editingFinished()));
+    connect(ui->scrollBar_Height, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Height_sliderReleased()));
 }
 
 void CameraParam::setOffsetX(int val, int min, int max, int inc)
 {
+    disconnect(ui->spinBox_OffsetX, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetX_editingFinished()));
+    disconnect(ui->scrollBar_OffsetX, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetX_sliderReleased()));
+
     ui->scrollBar_OffsetX->setMaximum(max);
     ui->scrollBar_OffsetX->setMinimum(min);
     ui->scrollBar_OffsetX->setSingleStep(inc);
@@ -137,10 +148,16 @@ void CameraParam::setOffsetX(int val, int min, int max, int inc)
     ui->spinBox_OffsetX->setMinimum(min);
     ui->spinBox_OffsetX->setSingleStep(inc);
     ui->spinBox_OffsetX->setValue(val);
+
+    connect(ui->spinBox_OffsetX, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetX_editingFinished()));
+    connect(ui->scrollBar_OffsetX, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetX_sliderReleased()));
 }
 
 void CameraParam::setOffsetY(int val, int min, int max, int inc)
 {
+    disconnect(ui->spinBox_OffsetY, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetY_editingFinished()));
+    disconnect(ui->scrollBar_OffsetY, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetY_sliderReleased()));
+
     ui->scrollBar_OffsetY->setMaximum(max);
     ui->scrollBar_OffsetY->setMinimum(min);
     ui->scrollBar_OffsetY->setSingleStep(inc);
@@ -150,10 +167,16 @@ void CameraParam::setOffsetY(int val, int min, int max, int inc)
     ui->spinBox_OffsetY->setMinimum(min);
     ui->spinBox_OffsetY->setSingleStep(inc);
     ui->spinBox_OffsetY->setValue(val);
+
+    connect(ui->spinBox_OffsetY, SIGNAL(editingFinished()), this, SLOT(on_spinBox_OffsetY_editingFinished()));
+    connect(ui->scrollBar_OffsetY, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_OffsetY_sliderReleased()));
 }
 
 void CameraParam::setExposure(int val, int min, int max, int inc)
 {
+    disconnect(ui->spinBox_Exposure, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Exposure_editingFinished()));
+    disconnect(ui->scrollBar_Exposure, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Exposure_sliderReleased()));
+
     ui->scrollBar_Exposure->setMaximum(max);
     ui->scrollBar_Exposure->setMinimum(min);
     ui->scrollBar_Exposure->setSingleStep(inc);
@@ -163,20 +186,31 @@ void CameraParam::setExposure(int val, int min, int max, int inc)
     ui->spinBox_Exposure->setMinimum(min);
     ui->spinBox_Exposure->setSingleStep(inc);
     ui->spinBox_Exposure->setValue(val);
+
+    connect(ui->spinBox_Exposure, SIGNAL(editingFinished()), this, SLOT(on_spinBox_Exposure_editingFinished()));
+    connect(ui->scrollBar_Exposure, SIGNAL(sliderReleased()), this, SLOT(on_scrollBar_Exposure_sliderReleased()));
 }
 
 void CameraParam::setPixelFormat(QString val, QStringList enumFeatureList)
 {
+    disconnect(ui->comboBox_PixelFormat, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_PixelFormat_currentIndexChanged(const QString)));
+
     ui->comboBox_PixelFormat->clear();
     ui->comboBox_PixelFormat->addItems(enumFeatureList);
     ui->comboBox_PixelFormat->setCurrentText(val);
+
+    connect(ui->comboBox_PixelFormat, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_PixelFormat_currentIndexChanged(const QString)));
 }
 
 void CameraParam::setTestImageSelector(QString val, QStringList enumFeatureList)
 {
+    disconnect(ui->comboBox_TestImageSelector, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_TestImageSelector_currentIndexChanged(const QString)));
+
     ui->comboBox_TestImageSelector->clear();
     ui->comboBox_TestImageSelector->addItems(enumFeatureList);
     ui->comboBox_TestImageSelector->setCurrentText(val);
+
+    connect(ui->comboBox_TestImageSelector, SIGNAL(currentIndexChanged(const QString)), this, SLOT(on_comboBox_TestImageSelector_currentIndexChanged(const QString)));
 }
 
 void CameraParam::on_spinBox_Height_editingFinished()

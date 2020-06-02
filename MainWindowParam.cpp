@@ -1,24 +1,27 @@
 #include <QDockWidget>
 #include <QTextBrowser>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <pylon/DeviceInfo.h>
 #include "MainWindow.h"
 #include "CameraParam.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 using namespace GenApi;
 using namespace GenICam;
 
-void MainWindow::createParamWindows(bool showWindow)
+void MainWindow::createParamWindow(bool showWindow)
 {
     QDockWidget *dock = new QDockWidget(tr("Parameters"), this);
     dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    leftDockTabbing.insert(dock->windowTitle(), dock);
 
     param = new CameraParam(dock);
 
     dock->setWidget(param);
 //    dock->resize(250,400);
 
-    addDockWidget(Qt::RightDockWidgetArea, dock);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
     ui->menuTools->addAction(dock->toggleViewAction());
 
     //resize Qt buck
@@ -26,14 +29,14 @@ void MainWindow::createParamWindows(bool showWindow)
     dock->hide();
     dock->setFloating(false);
 
+    if(showWindow)
+        dock->show();
+
     connect(param, SIGNAL(setFloatValue(QString, QString, int)), this, SLOT(setParamFloatValue(QString, QString, int)));
     connect(param, SIGNAL(setIntergerValue(QString, QString, int)), this, SLOT(setParamIntergerValue(QString, QString, int)));
     connect(param, SIGNAL(setStringValue(QString, QString, QString)), this, SLOT(setParamStringValue(QString, QString, QString)));
-
-    if(showWindow)
-    {
-        dock->show();
-    }
+    connect(param, SIGNAL(saveParameters(QString)), this, SLOT(saveParameters(QString)));
+    connect(param, SIGNAL(loadParameters(QString)), this, SLOT(loadParameters(QString)));
 }
 
 void MainWindow::getAllEnumValues(QStringList &Featurelist, CInstantCamera *camera, GenICam::gcstring EnumFeatureName)
@@ -53,7 +56,7 @@ void MainWindow::getAllEnumValues(QStringList &Featurelist, CInstantCamera *came
     }
 }
 
-void MainWindow::initializeParam(QString cameraName, CameraParam *p)
+void MainWindow::initializeParam(QString cameraName)
 {
     param->setCameraName(cameraName);
 
@@ -61,29 +64,29 @@ void MainWindow::initializeParam(QString cameraName, CameraParam *p)
 
     GenApi::INodeMap& nodemap = cam->camera->GetNodeMap();
     VersionInfo deviceSFNCVersion = cam->camera->GetSfncVersion();
-    p->setDeviceInfo(deviceSFNCVersion);
+    param->setDeviceInfo(deviceSFNCVersion);
 
     CIntegerPtr sensorWidth (nodemap.GetNode("SensorWidth"));
     CIntegerPtr sensorHeight (nodemap.GetNode("SensorHeight"));
-    p->setResolution(sensorWidth->GetValue(), sensorHeight->GetValue());
+    param->setResolution(sensorWidth->GetValue(), sensorHeight->GetValue());
 
     CIntegerPtr Width (nodemap.GetNode("Width"));
-    p->setWidth(Width->GetValue(), Width->GetMin(), Width->GetMax(), Width->GetInc());
+    param->setWidth(Width->GetValue(), Width->GetMin(), Width->GetMax(), Width->GetInc());
 
     CIntegerPtr Height (nodemap.GetNode("Height"));
-    p->setHeight(Height->GetValue(), Height->GetMin(), Height->GetMax(), Height->GetInc());
+    param->setHeight(Height->GetValue(), Height->GetMin(), Height->GetMax(), Height->GetInc());
 
     CIntegerPtr OffsetX (nodemap.GetNode("OffsetX"));
-    p->setOffsetX(OffsetX->GetValue(), OffsetX->GetMin(), OffsetX->GetMax(), OffsetX->GetInc());
+    param->setOffsetX(OffsetX->GetValue(), OffsetX->GetMin(), OffsetX->GetMax(), OffsetX->GetInc());
 
     CIntegerPtr OffsetY (nodemap.GetNode("OffsetY"));
-    p->setOffsetY(OffsetY->GetValue(), OffsetY->GetMin(), OffsetY->GetMax(), OffsetY->GetInc());
+    param->setOffsetY(OffsetY->GetValue(), OffsetY->GetMin(), OffsetY->GetMax(), OffsetY->GetInc());
 
     QStringList enumFeatureList;
     getAllEnumValues(enumFeatureList, cam->camera, "PixelFormat");
     CEnumerationPtr PixelFormat(nodemap.GetNode("PixelFormat"));
     QString sPixelFormat = PixelFormat->ToString().c_str();
-    p->setPixelFormat(sPixelFormat, enumFeatureList);
+    param->setPixelFormat(sPixelFormat, enumFeatureList);
     enumFeatureList.clear();
 
     if(deviceSFNCVersion < Sfnc_2_0_0 )  // ace GigE
@@ -91,41 +94,41 @@ void MainWindow::initializeParam(QString cameraName, CameraParam *p)
         CIntegerPtr ExposureTimeRaw (nodemap.GetNode("ExposureTimeRaw"));
         int exposure = ExposureTimeRaw->GetMax();
         if(exposure > 1000000) exposure = 1000000;
-        p->setExposure(ExposureTimeRaw->GetValue(), ExposureTimeRaw->GetMin(), exposure, ExposureTimeRaw->GetInc());
+        param->setExposure(ExposureTimeRaw->GetValue(), ExposureTimeRaw->GetMin(), exposure, ExposureTimeRaw->GetInc());
 
         // Test Iamge Selector
         getAllEnumValues(enumFeatureList, cam->camera, "TestImageSelector");
         CEnumerationPtr TestImageSelector(nodemap.GetNode("TestImageSelector"));
         QString sTestImageSelector = TestImageSelector->ToString().c_str();
-        p->setTestImageSelector(sTestImageSelector, enumFeatureList);
+        param->setTestImageSelector(sTestImageSelector, enumFeatureList);
         enumFeatureList.clear();
     }
     else if (deviceSFNCVersion == Sfnc_2_1_0 )  // ace USB
     {   // Basler USB Cameras
         CFloatPtr ExposureTime (nodemap.GetNode("ExposureTime"));
-        p->setExposure(ExposureTime->GetValue(), ExposureTime->GetMin(), ExposureTime->GetMax(), ExposureTime->GetInc());
+        param->setExposure(ExposureTime->GetValue(), ExposureTime->GetMin(), ExposureTime->GetMax(), ExposureTime->GetInc());
 
         // Test Iamge Selector
         getAllEnumValues(enumFeatureList, cam->camera, "TestImageSelector");
         CEnumerationPtr TestImageSelector(nodemap.GetNode("TestImageSelector"));
         QString sTestImageSelector = TestImageSelector->ToString().c_str();
-        p->setTestImageSelector(sTestImageSelector, enumFeatureList);
+        param->setTestImageSelector(sTestImageSelector, enumFeatureList);
         enumFeatureList.clear();
     }
     else if (deviceSFNCVersion == Sfnc_2_2_0 )  // Dart Cameras
     {   // Basler USB Cameras
         CFloatPtr ExposureTime (nodemap.GetNode("ExposureTime"));
-        p->setExposure(ExposureTime->GetValue(), ExposureTime->GetMin(), ExposureTime->GetMax(), ExposureTime->GetInc());
+        param->setExposure(ExposureTime->GetValue(), ExposureTime->GetMin(), ExposureTime->GetMax(), ExposureTime->GetInc());
 
         // Test Iamge Selector
         getAllEnumValues(enumFeatureList, cam->camera, "TestPattern");
         CEnumerationPtr TestImageSelector(nodemap.GetNode("TestPattern"));
         QString sTestImageSelector = TestImageSelector->ToString().c_str();
-        p->setTestImageSelector(sTestImageSelector, enumFeatureList);
+        param->setTestImageSelector(sTestImageSelector, enumFeatureList);
         enumFeatureList.clear();
     }
 
-    p->setEnableCotrols(true);
+    param->setEnableCotrols(true);
 }
 
 void MainWindow::setParamIntergerValue(QString cameraName, QString nodeName, int value)
@@ -182,11 +185,53 @@ void MainWindow::setParamStringValue(QString cameraName, QString nodeName, QStri
         {
             Parameter->FromString(value.toStdString().c_str());
         }
-
     }
     catch (GenICam::GenericException &e)
     {
         addTrace(QString("An exception occurred: ") + QString(e.GetDescription()), QColor("red"));
     }
+}
+
+void MainWindow::saveParameters(QString cameraName)
+{
+    try
+    {
+        SCamera* cam = cameras[cameraName];
+        QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
+
+        CFeaturePersistence::Save(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap());
+
+        QMessageBox::information(this, QString("Parameters"), QString("Camera parameters saved for camera: " + cameraName));
+    }
+    catch (GenICam::GenericException &e)
+    {
+        addTrace(QString("An exception occurred: ") + QString(e.GetDescription()), QColor("red"));
+    }
+}
+
+bool MainWindow::loadParameters(QString cameraName)
+{
+    bool status = false;
+
+    try
+    {
+        SCamera* cam = cameras[cameraName];
+        QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
+
+        QFile file(filePathParam);
+        if(file.exists())
+        {
+            CFeaturePersistence::Load(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap(), true);
+            status = true;
+
+            initializeParam(cameraName);
+        }
+    }
+    catch (GenICam::GenericException &e)
+    {
+        addTrace(QString("An exception occurred: ") + QString(e.GetDescription()), QColor("red"));
+    }
+
+    return status;
 }
 

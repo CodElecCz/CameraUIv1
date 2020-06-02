@@ -20,8 +20,19 @@ public:
 
 public:
     void addView(QString name);
-    void removeView(QString name);
+    void removeView();
+    QStringList getViewNames();
+
     void updateImage(QString name, QImage image);
+    bool saveImage(QString name, QString filePath, QString imageFormat = "PNG", int imageQuality = -1);
+
+    void setError(QString name, QString msg);
+    QString getError(QString name);
+    void clearError(QString name);
+    bool isError(QString name);
+
+    void setPath(QString name, QString path);
+    QString getPath(QString name);
 
 public slots:
     void updateImage(QString name, QImage* image);

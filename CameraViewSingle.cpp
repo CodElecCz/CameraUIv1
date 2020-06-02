@@ -1,8 +1,9 @@
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QDebug>
 #include <time.h>
 #include "CameraViewSingle.h"
-#include "ui_cameraviewsingle.h"
+#include "ui_CameraViewSingle.h"
 
 CameraViewSingle::CameraViewSingle(QWidget *parent, QString name) :
     QWidget(parent),
@@ -42,6 +43,7 @@ CameraViewSingle::CameraViewSingle(QWidget *parent, QString name) :
     toolboxLayout->addStretch();
     toolboxLayout->addWidget(cameraName);
     toolboxLayout->addWidget(cameraInfo);
+    toolboxLayout->addStretch();
 
     centralLayout->addLayout(toolboxLayout);
 
@@ -64,22 +66,54 @@ void CameraViewSingle::setViewName(QString name)
     cameraName->setText(name);
 }
 
-void CameraViewSingle::updateImage(QImage image)
+void CameraViewSingle::setError(QString msg)
 {
     scene->clear();
-    scene->addPixmap(QPixmap::fromImage(image));
+    view->update();
+
+    error = msg;
+    cameraInfo->setText(" [Error]");
+    cameraInfo->setToolTip(msg);
+}
+
+void CameraViewSingle::updateImage(QImage image)
+{ 
+    //image was resized
+    if(image.width() != static_cast<int>(scene->width()) || image.height() != static_cast<int>(scene->height()))
+        initFitInView = false;
+
+    //GraphicView resized
+    static int widthV_old = 0;
+    static int heightV_old = 0;
+    int widthV = view->rect().width();
+    int heightV = view->rect().height();
+    if(widthV_old != widthV || heightV_old!=heightV)
+    {
+        initFitInView = false;
+        widthV_old = widthV;
+        heightV_old = heightV;
+    }
+
+    scene->clear();
+    scene->setSceneRect(image.rect());
+    pixMap = QPixmap::fromImage(image);
+    qImage = image.copy();
+    scene->addPixmap(pixMap);
 
     //ROIs
-    //scene->addRect(20,20,100,100, QPen(QColor("green")), QBrush());
+    //scene->addRect(0,0,scene->width(), scene->height(), QPen(QColor("green")), QBrush());
 
     view->update();
 
     //first image adjustment
-    if(!initFitInView)
+    if(!initFitInView && view->isVisible())
     {
         initFitInView = true;
         view->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
     }
+
+    cameraInfo->setText("");
+    cameraInfo->setToolTip("");
 }
 
 void CameraViewSingle::updateImage(QImage *image)
@@ -106,10 +140,11 @@ void CameraViewSingle::updateImage(QImage *image)
 
         if(time>0)
         {
-            double dt = (double)(clock() - time)/1000.0;
+            double dt = static_cast<double>(clock() - time)/1000.0;
             if(dt<1.0)
             {
-                QString stime = QString("; Time: %1 [s]; Framerate: %2").arg(QString::number(dt, 'f', 3), QString::number(1.0/dt, 'f', 0));
+                //QString stime = QString("; Time: %1 [s]; Framerate: %2").arg(QString::number(dt, 'f', 3), QString::number(1.0/dt, 'f', 0));
+                QString stime = QString("; %1 [fps]").arg(QString::number(1.0/dt, 'f', 0));
                 cameraInfo->setText(stime);
             }
         }
@@ -133,4 +168,16 @@ void CameraViewSingle::buttonClicked(int id)
     default:
         break;
     }
+}
+
+bool CameraViewSingle::saveImage(QString filePath, QString imageFormat, int imageQuality)
+{
+    //bool res = pixMap.save(filePath, imageFormat.toStdString().c_str(), imageQuality);
+    bool res = qImage.save(filePath, imageFormat.toStdString().c_str(), imageQuality);
+    if(!res)
+    {
+        qDebug() << "File not saved! " + filePath;
+    }
+
+    return res;
 }
