@@ -4,6 +4,7 @@ Camera User Interface for Basler camera.
 
 Software:
 - Qt 5.11.2
+- MS SQL
 - [Basler Pylon 5](https://www.baslerweb.com/en/products/software/pylon-windows/)
 
 ### User Interface
