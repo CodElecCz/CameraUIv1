@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,10 +27,14 @@ DEFINES += _TIMEVAL_DEFINED
 
 win32:CONFIG(release, debug|release): LIBS += \
     -L$$PWD/../../Lib/Build64/release/ \
-    -L"C:/Program Files/Basler/pylon 5/Development/lib/x64"
+    -L"C:/Program Files/Basler/pylon 5/Development/lib/x64" \
+    -lfvedio \
+    -lclv
 else:win32:CONFIG(debug, debug|release): LIBS += \
     -L$$PWD/../../Lib/Build64/debug/ \
-    -L"C:/Program Files/Basler/pylon 5/Development/lib/x64"
+    -L"C:/Program Files/Basler/pylon 5/Development/lib/x64" \
+    -lfvedio \
+    -lclv
 
 INCLUDEPATH += $$PWD/../../Lib/
 INCLUDEPATH += "C:/Program Files/Basler/pylon 5/Development/include"
@@ -50,7 +54,13 @@ SOURCES += \
     LoadView.cpp \
     CameraViewSingle.cpp \
     CameraView.cpp \
-    CameraParam.cpp
+    CameraParam.cpp \
+    ReportView.cpp \
+    MainWindowReport.cpp \
+    StorageView.cpp \
+    MainWindowStorage.cpp \
+    BarcodeView.cpp \
+    MainWindowBarcode.cpp
 
 HEADERS += \
     DioView.h \
@@ -59,7 +69,11 @@ HEADERS += \
     CameraView.h \
     CameraParam.h \
     MainWindow.h \
-    CameraGrabThread.h
+    CameraGrabThread.h \
+    LightWidget.h \
+    ReportView.h \
+    StorageView.h \
+    BarcodeView.h
 
 FORMS += \
     AboutDialog.ui \
@@ -68,7 +82,10 @@ FORMS += \
     CameraViewSingle.ui \
     DioView.ui \
     LoadView.ui \
-    MainWindow.ui
+    MainWindow.ui \
+    ReportView.ui \
+    StorageView.ui \
+    BarcodeView.ui
 
 RESOURCES += \
     Resources.qrc

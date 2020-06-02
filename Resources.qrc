@@ -18,5 +18,6 @@
         <file>icons/zoom_fit.png</file>
         <file>icons/zoom_in.png</file>
         <file>icons/zoom_out.png</file>
+        <file>icons/snap_all.png</file>
     </qresource>
 </RCC>
