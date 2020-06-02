@@ -8,5 +8,5 @@ Software:
 
 ### User Interface
 
-![Camera GUI](https://codeleccz.github.io/CameraUIv1/Qt%20Pylon.png)
+![Camera GUI](https://codeleccz.github.io/CameraUIv1/screenshots/app1.png)
 
