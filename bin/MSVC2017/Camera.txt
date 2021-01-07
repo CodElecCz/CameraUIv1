@@ -1,0 +1,9 @@
+CREATE TABLE `catalog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` datetime NOT NULL,
+  `barcode` varchar(45) NOT NULL,
+  `image` varchar(15) NOT NULL,
+  `camera` varchar(45) NOT NULL,
+  `error` varchar(120) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8

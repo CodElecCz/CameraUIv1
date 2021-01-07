@@ -2,7 +2,7 @@
 #include <QDebug>
 #include "DioView.h"
 #include "ui_DioView.h"
-#include "FVEDIOLib/FVEDIOException.h"
+#include "Lib/FVEDIOLib/FVEDIOException.h"
 
 using namespace Utilities::FVEDIO;
 

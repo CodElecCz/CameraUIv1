@@ -2,8 +2,9 @@
 #include <QDebug>
 #include <QTimer>
 #include "BarcodeView.h"
+#include "Lib/CLVLib/CLVException.h"
+
 #include "ui_BarcodeView.h"
-#include "CLVLib/CLVException.h"
 
 using namespace Utilities::CLV;
 

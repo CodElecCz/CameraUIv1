@@ -26,21 +26,21 @@ DEFINES += _TIMEVAL_DEFINED
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 win32:CONFIG(release, debug|release): LIBS += \
-    -L$$PWD/../../Lib/Build64/release/ \
+    -L$$PWD/Lib/Build64/release/ \
     -L"C:/Program Files/Basler/pylon 5/Development/lib/x64" \
     -lfvedio \
     -lclv
 else:win32:CONFIG(debug, debug|release): LIBS += \
-    -L$$PWD/../../Lib/Build64/debug/ \
+    -L$$PWD/Lib/Build64/debug/ \
     -L"C:/Program Files/Basler/pylon 5/Development/lib/x64" \
     -lfvedio \
     -lclv
 
-INCLUDEPATH += $$PWD/../../Lib/
+INCLUDEPATH += Lib/
 INCLUDEPATH += "C:/Program Files/Basler/pylon 5/Development/include"
 
-DEPENDPATH += $$PWD/../../Lib/
-DEPENDPATH += $$PWD/../../Lib/Build64/
+DEPENDPATH += Lib/
+DEPENDPATH += Lib/Build64/
 DEPENDPATH += "C:/Program Files/Basler/pylon 5/Runtime/x64"
 
 SOURCES += \

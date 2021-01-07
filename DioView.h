@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QButtonGroup>
-#include "FVEDIOLib/FVEDIOProtocol.h"
+#include "Lib/FVEDIOLib/FVEDIOProtocol.h"
 
 namespace Ui {
 class DioView;

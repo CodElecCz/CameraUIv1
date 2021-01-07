@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QDateTime>
-#include "CLVLib/CLVProtocol.h"
+#include "Lib/CLVLib/CLVProtocol.h"
 
 namespace Ui {
 class BarcodeView;
