@@ -194,7 +194,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Application Version: v1.1 (09.01.2019)</string>
+    <string>Application Version: v1.2 (05.04.2022)</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
