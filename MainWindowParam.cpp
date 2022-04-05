@@ -115,7 +115,7 @@ void MainWindow::initializeParam(QString cameraName)
         param->setTestImageSelector(sTestImageSelector, enumFeatureList);
         enumFeatureList.clear();
     }
-    else if (deviceSFNCVersion == Sfnc_2_2_0 )  // Dart Cameras
+    else if (deviceSFNCVersion >= Sfnc_2_2_0 )  // Dart Cameras
     {   // Basler USB Cameras
         CFloatPtr ExposureTime (nodemap.GetNode("ExposureTime"));
         param->setExposure(ExposureTime->GetValue(), ExposureTime->GetMin(), ExposureTime->GetMax(), ExposureTime->GetInc());

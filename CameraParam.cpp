@@ -370,7 +370,7 @@ void CameraParam::on_spinBox_Exposure_editingFinished()
         {
             emit setFloatValue(getCameraName(), "ExposureTime", val);
         }
-        else if (m_DeviceSFNCVersion == Pylon::Sfnc_2_2_0)
+        else if (m_DeviceSFNCVersion >= Pylon::Sfnc_2_2_0)
         {
             emit setFloatValue(getCameraName(), "ExposureTime", val);
         }
@@ -393,7 +393,7 @@ void CameraParam::on_scrollBar_Exposure_sliderReleased()
         {
              emit setFloatValue(getCameraName(), "ExposureTime", val);
         }
-        else if (m_DeviceSFNCVersion == Pylon::Sfnc_2_2_0)   // Dart Cameras
+        else if (m_DeviceSFNCVersion >= Pylon::Sfnc_2_2_0)   // Dart Cameras
         {
             emit setFloatValue(getCameraName(), "ExposureTime", val);
         }
@@ -413,7 +413,7 @@ void CameraParam::on_comboBox_TestImageSelector_currentIndexChanged(const QStrin
     {
          emit setStringValue(getCameraName(), "TestImageSelector", arg1);
     }
-    else if(m_DeviceSFNCVersion == Pylon::Sfnc_2_2_0)
+    else if(m_DeviceSFNCVersion >= Pylon::Sfnc_2_2_0)
     {
         emit setStringValue(getCameraName(), "TestPattern", arg1);
     }
