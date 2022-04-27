@@ -90,35 +90,43 @@ void CameraView::removeView()
     cntLayout = 0;
 }
 
-void CameraView::updateImage(QString name, QImage image)
-{
-    CameraViewSingle* view = views[name];
-
-    if(view!=nullptr)
+void CameraView::updateImage(QString name, const QImage& image)
+{   
+    if(views.contains(name))
     {
-        view->updateImage(image);
+        CameraViewSingle* view = views[name];
+        if(view)
+        {
+            view->updateImage(image);
 
-        //clear last error
-        view->clearError();
+            //clear last error
+            view->clearError();
+        }
     }
     else
-    {
+    {        
         addView(name);
-        view = views[name];
-        view->updateImage(image);
+
+        CameraViewSingle* view = views[name];
+        if(view)
+        {
+            view->updateImage(image);
+        }
     }
 }
 
 void CameraView::updateImage(QString name, QImage* image)
 {
-    CameraViewSingle* view = views[name];
-
-    if(view!=nullptr)
+    if(views.contains(name))
     {
-        view->updateImage(image);
+        CameraViewSingle* view = views.value(name);
+        if(view)
+        {
+            view->updateImage(image);
 
-        //clear last error
-        view->clearError();
+            //clear last error
+            view->clearError();
+        }
     }
 }
 

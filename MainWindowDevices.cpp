@@ -204,9 +204,9 @@ void MainWindow::cameraClose(QString cameraName)
 {
     try
     {
-        if(cameraName.length() > 0)
-        {
-            SCamera* cam = cameras[cameraName];
+        if(cameraName.length() > 0 && cameras.contains(cameraName))
+        {            
+            SCamera* cam = cameras.value(cameraName);
 
             if(cam->camera->IsOpen())
             {
@@ -216,10 +216,12 @@ void MainWindow::cameraClose(QString cameraName)
                 qDebug() << cameraName + QString(" Close()");
 
                 delete cam->camera;
-                cam->camera = nullptr;
+                cam->camera = nullptr;                
 
                 addTrace(QString(cameraName + ", Camera close"));
             }
+
+            cameras.remove(cameraName);
         }
     }
     catch(Pylon::GenericException &e)

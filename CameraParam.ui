@@ -24,7 +24,7 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>201</width>
+     <width>231</width>
      <height>16</height>
     </rect>
    </property>
@@ -354,7 +354,7 @@
     <string>Save</string>
    </property>
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/icons/save.ico</normaloff>:/icons/save.ico</iconset>
    </property>
   </widget>
@@ -371,13 +371,11 @@
     <string>Load</string>
    </property>
    <property name="icon">
-    <iconset resource="Resources.qrc">
+    <iconset>
      <normaloff>:/icons/reload.ico</normaloff>:/icons/reload.ico</iconset>
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="Resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

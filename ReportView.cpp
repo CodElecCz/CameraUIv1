@@ -144,7 +144,7 @@ bool ReportView::storeResult(QString date, QString cam, QString barcode, QString
 }
 
 void ReportView::on_calendar_clicked(QDate date)
-{
+{   
     QSqlQuery query;
     QString sdate = date.toString("yyyy-MM-dd");
     QString squery = "SELECT * FROM hyundai.catalog WHERE date>='" + sdate + " 00:00:00' AND date<='" + sdate + " 23:59:59' GROUP BY date ORDER BY date DESC";
@@ -169,7 +169,7 @@ void ReportView::on_calendar_clicked(QDate date)
         QString sdate = query.value(1).toString();
         QString sbarcode = query.value(2).toString();
 
-        QListWidgetItem *item = new QListWidgetItem(sbarcode);
+        QListWidgetItem *item = new QListWidgetItem(sbarcode, ui->list);
 
         sdate.remove(".000");
         item->setToolTip(sdate);
@@ -179,7 +179,7 @@ void ReportView::on_calendar_clicked(QDate date)
         ui->list->setAccessibleDescription(sdate);
     }
 
-    if(ui->list->count()>0)
+    if(ui->list->count() > 0)
     {
         QListWidgetItem *item = ui->list->item(0);
         ui->list->setCurrentItem(item);
@@ -224,7 +224,7 @@ void ReportView::on_list_itemClicked(QListWidgetItem* item)
         else
             imageName = "";
 
-        emit readImageFile(scam, imageName);
+        emit readImageFile(scam, imageName, QString());
     }
 }
 

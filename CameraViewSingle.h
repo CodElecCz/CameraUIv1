@@ -20,7 +20,7 @@ public:
 
 public:
     void setViewName(QString name);
-    void updateImage(QImage image);
+    void updateImage(const QImage& image);
     void updateImage(QImage *image);
     bool saveImage(QString filePath, QString imageFormat = "PNG", int imageQuality = -1);
 

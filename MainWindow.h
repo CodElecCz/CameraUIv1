@@ -28,6 +28,16 @@ typedef struct _SCamera
     CameraGrabThread      *grab;
 } SCamera;
 
+typedef struct _SProcess
+{
+    QString cameraName;
+    bool led0;
+    bool led1;
+    bool led2;
+    bool led3;
+    int snapDelayMs;
+} SProcess;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -133,6 +143,7 @@ private:
     BarcodeView     *barcode;
 
     QMap<QString, SCamera*>     cameras;
+    QList<SProcess>             process;
     QMap<QString, QDockWidget*> leftDockTabbing;
 
     QSqlDatabase    db;

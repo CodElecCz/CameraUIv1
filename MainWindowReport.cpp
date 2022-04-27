@@ -88,6 +88,7 @@ void MainWindow::readImageFile(QString camera, QString imageName, QString error)
         {
             QImage image(filePath);
             view->updateImage(camera, image);
+            //emit addTrace("Image file : " + filePath);
             view->setPath(camera, filePath);
         }
     }

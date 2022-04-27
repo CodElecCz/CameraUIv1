@@ -24,6 +24,15 @@ MainWindow::MainWindow(QWidget *parent) :
     trace(nullptr),
     param(nullptr),
     storage(nullptr),
+    barcode(nullptr),
+
+    allowShutDown(false),
+    imageQuality(90),
+    barcodeLenght(0),
+    storageMinLimit(10),
+    storageMinData(5),
+    delayAfterLight(0),
+    traceErrorsToFile(false),
 
     toolbarActionOpen(nullptr),
     toolbarActionClose(nullptr),
@@ -31,14 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     toolbarActionMultipleGrab(nullptr),
     toolbarActionopenContinuesGrab(nullptr),
     toolbarActionPlaybackStop(nullptr),
-    toolbarActionRecordStart(nullptr),
-
-    allowShutDown(false),
-    barcodeLenght(0),
-    storageMinLimit(10),
-    storageMinData(5),
-    delayAfterLight(0),
-    traceErrorsToFile(false)
+    toolbarActionRecordStart(nullptr)
 {
     ui->setupUi(this);
 
@@ -284,6 +286,20 @@ void MainWindow::initializeApp()
         }
     }
 
+    //SNAP
+    for(int i = 1; i <= 4 ; i++)
+    {
+        SProcess p;
+        p.cameraName = config->value(QString("Snap%1/CameraName").arg(i)).toString();
+        p.led0 = config->value(QString("Snap%1/Led0").arg(i)).toBool();
+        p.led1 = config->value(QString("Snap%1/Led1").arg(i)).toBool();
+        p.led2 = config->value(QString("Snap%1/Led2").arg(i)).toBool();
+        p.led3 = config->value(QString("Snap%1/Led3").arg(i)).toBool();
+        p.snapDelayMs = config->value(QString("Snap%1/SnapDelayMs").arg(i)).toInt();
+
+        process.append(p);
+    }
+
     info->close();
     delete info;
 
@@ -514,59 +530,47 @@ void MainWindow::on_actionCloseAll_triggered(bool)
 }
 
 void MainWindow::processImages(QString barcode)
-{
-    int camNb = cameras.keys().size();
+{    
     bool isSnap, isOpen;
     QString camName;
 
-    for(int i = 0; i< camNb; i++)
+    foreach(auto p, process)
     {
-        camName = cameras.keys().at(i);
-
-        switch(i)
+        if(cameras.contains(p.cameraName))
         {
-        case 0:
-            if(dio!=nullptr) dio->LED0(100);
-            break;
-        case 1:
-            if(dio!=nullptr) dio->LED1(100);
-            break;
-        case 2:
-            if(dio!=nullptr) dio->LED2(100);
-            break;
-        case 3:
-            if(dio!=nullptr) dio->LED3(100);
-            break;
-        }
+            camName = p.cameraName;
 
-        if(delayAfterLight>0)
-            Sleep(delayAfterLight);
+            if(dio && p.led0)
+                dio->LED0(100);
+            if(dio && p.led1)
+                dio->LED1(100);
+            if(dio && p.led2)
+                dio->LED2(100);
+            if(dio && p.led3)
+                dio->LED3(100);
 
-        isSnap = cameraSnap(camName);
-        if(!isSnap)
-        {
-            cameraClose(camName);
-            isOpen = cameraOpen(camName);
-            if(isOpen)
+            if(delayAfterLight>0)
+                Sleep(delayAfterLight);
+
+            isSnap = cameraSnap(camName);
+            if(!isSnap)
             {
-              isSnap = cameraSnap(camName);
+                cameraClose(camName);
+                isOpen = cameraOpen(camName);
+                if(isOpen)
+                {
+                  isSnap = cameraSnap(camName);
+                }
             }
-        }
 
-        switch(i)
-        {
-        case 0:
-            if(dio!=nullptr) dio->LED0(0);
-            break;
-        case 1:
-            if(dio!=nullptr) dio->LED1(0);
-            break;
-        case 2:
-            if(dio!=nullptr) dio->LED2(0);
-            break;
-        case 3:
-            if(dio!=nullptr) dio->LED3(0);
-            break;
+            if(dio && p.led0)
+                dio->LED0(0);
+            if(dio && p.led1)
+                dio->LED1(0);
+            if(dio && p.led2)
+                dio->LED2(0);
+            if(dio && p.led3)
+                dio->LED3(0);
         }
     }
 

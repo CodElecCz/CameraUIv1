@@ -60,7 +60,10 @@ void MainWindow::initializeParam(QString cameraName)
 {
     param->setCameraName(cameraName);
 
-    SCamera* cam = cameras[cameraName];
+    if(!cameras.contains(cameraName))
+        return;
+
+    SCamera* cam = cameras.value(cameraName);
 
     GenApi::INodeMap& nodemap = cam->camera->GetNodeMap();
     VersionInfo deviceSFNCVersion = cam->camera->GetSfncVersion();
@@ -135,15 +138,18 @@ void MainWindow::setParamIntergerValue(QString cameraName, QString nodeName, int
 {
     try
     {
-        SCamera* cam = cameras[cameraName];
-
-        GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
-        CIntegerPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
-
-        int set = value - (value % Parameter->GetInc());
-        if( set >= Parameter->GetMin() && set <= Parameter->GetMax() )
+        if(cameras.contains(cameraName))
         {
-            Parameter->SetValue(set);
+            SCamera* cam = cameras.value(cameraName);
+
+            GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
+            CIntegerPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
+
+            int set = value - (value % Parameter->GetInc());
+            if( set >= Parameter->GetMin() && set <= Parameter->GetMax() )
+            {
+                Parameter->SetValue(set);
+            }
         }
     }
     catch (GenICam::GenericException &e)
@@ -156,14 +162,17 @@ void  MainWindow::setParamFloatValue(QString cameraName, QString nodeName, int v
 {
    try
    {
-        SCamera* cam = cameras[cameraName];
-
-        GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
-        CFloatPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
-
-        if( value >= Parameter->GetMin() && value <= Parameter->GetMax() )
+        if(cameras.contains(cameraName))
         {
-            Parameter->SetValue((double)value);
+            SCamera* cam = cameras.value(cameraName);
+
+            GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
+            CFloatPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
+
+            if( value >= Parameter->GetMin() && value <= Parameter->GetMax() )
+            {
+                Parameter->SetValue((double)value);
+            }
         }
     }
     catch (GenICam::GenericException &e)
@@ -176,14 +185,17 @@ void MainWindow::setParamStringValue(QString cameraName, QString nodeName, QStri
 {
     try
     {
-        SCamera* cam = cameras[cameraName];
-
-        GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
-        CEnumerationPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
-
-        if ( IsWritable( Parameter))
+        if(cameras.contains(cameraName))
         {
-            Parameter->FromString(value.toStdString().c_str());
+            SCamera* cam = cameras.value(cameraName);
+
+            GenApi::INodeMap *nodemap = &cam->camera->GetNodeMap();
+            CEnumerationPtr Parameter(nodemap->GetNode(nodeName.toStdString().c_str()));
+
+            if ( IsWritable( Parameter))
+            {
+                Parameter->FromString(value.toStdString().c_str());
+            }
         }
     }
     catch (GenICam::GenericException &e)
@@ -196,12 +208,15 @@ void MainWindow::saveParameters(QString cameraName)
 {
     try
     {
-        SCamera* cam = cameras[cameraName];
-        QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
+        if(cameras.contains(cameraName))
+        {
+            SCamera* cam = cameras.value(cameraName);
+            QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
 
-        CFeaturePersistence::Save(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap());
+            CFeaturePersistence::Save(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap());
 
-        QMessageBox::information(this, QString("Parameters"), QString("Camera parameters saved for camera: " + cameraName));
+            QMessageBox::information(this, QString("Parameters"), QString("Camera parameters saved for camera: " + cameraName));
+        }
     }
     catch (GenICam::GenericException &e)
     {
@@ -215,16 +230,19 @@ bool MainWindow::loadParameters(QString cameraName)
 
     try
     {
-        SCamera* cam = cameras[cameraName];
-        QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
-
-        QFile file(filePathParam);
-        if(file.exists())
+        if(cameras.contains(cameraName))
         {
-            CFeaturePersistence::Load(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap(), true);
-            status = true;
+            SCamera* cam = cameras.value(cameraName);
+            QString filePathParam(QCoreApplication::applicationDirPath() + "/" + cameraName + ".fps");
 
-            initializeParam(cameraName);
+            QFile file(filePathParam);
+            if(file.exists())
+            {
+                CFeaturePersistence::Load(filePathParam.toStdString().c_str(), &cam->camera->GetNodeMap(), true);
+                status = true;
+
+                initializeParam(cameraName);
+            }
         }
     }
     catch (GenICam::GenericException &e)

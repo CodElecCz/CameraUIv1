@@ -76,10 +76,10 @@ void CameraViewSingle::setError(QString msg)
     cameraInfo->setToolTip(msg);
 }
 
-void CameraViewSingle::updateImage(QImage image)
+void CameraViewSingle::updateImage(const QImage& image)
 { 
     //image was resized
-    if(image.width() != static_cast<int>(scene->width()) || image.height() != static_cast<int>(scene->height()))
+    if(image.width() != scene->width() || image.height() != scene->height())
         initFitInView = false;
 
     //GraphicView resized
@@ -175,7 +175,7 @@ bool CameraViewSingle::saveImage(QString filePath, QString imageFormat, int imag
     //bool res = pixMap.save(filePath, imageFormat.toStdString().c_str(), imageQuality);
     bool res = qImage.save(filePath, imageFormat.toStdString().c_str(), imageQuality);
     if(!res)
-    {
+    {        
         qDebug() << "File not saved! " + filePath;
     }
 

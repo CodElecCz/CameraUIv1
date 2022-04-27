@@ -33,7 +33,7 @@ private slots:
 
 signals:
     void addTrace(QString text, QColor color = QColor("black"));
-    void readImageFile(QString camera, QString imageFile, QString error = "");
+    void readImageFile(QString camera, QString imageFile, QString error);
 
 private:
     Ui::ReportView  *ui;

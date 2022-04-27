@@ -23,7 +23,7 @@ public:
     void removeView();
     QStringList getViewNames();
 
-    void updateImage(QString name, QImage image);
+    void updateImage(QString name, const QImage& image);
     bool saveImage(QString name, QString filePath, QString imageFormat = "PNG", int imageQuality = -1);
 
     void setError(QString name, QString msg);
